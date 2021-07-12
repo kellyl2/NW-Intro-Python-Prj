@@ -44,7 +44,7 @@ def save_json(df, params, file_name):
     df.reset_index(drop=True)
     file_dir=os.path.join(params["folder_location"],params[file_name])
     df.to_json(file_dir,orient=params['json_orient'])
-    print('number of trip records:',len(df))
+    print('number of records saved to json:',len(df))
     return len(df) 
 
 ####################################################
@@ -79,10 +79,10 @@ def get_trip_summary_data(params, device_list, gps_conn=None):
         num_rows = save_json(summary_df, params, "trip_summary_json")
         
     print('---------------------')
-    print("summary_df : vehicle trip summary statistics ")
+    print("trip_summary_df : vehicle trip summary statistics ")
     print(f"vehicle trip summary data complete, {num_rows} records returned ")  
     print('---------------------')
-    print(summary_df.head(2))
+    if params['verbose']==True: print(summary_df.head(2))
     return summary_df
 
 ####################################################

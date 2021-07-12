@@ -168,7 +168,7 @@ if __name__=='__main__':
     ## gps data logs for each trip contained within the trips_summary df
     trip_df = data.get_trip_gps_data(params, trip_summary_df, gps_conn=gps_data)         
     ## gps data for equipment sensor telemetry
-    exception_df = data.get_exception_gps_data(params, device_list=[], gps_conn=None)    
+    exception_df = data.get_exception_gps_data(params, device_list=device_list, gps_conn=gps_data)    
     ## bikelane gis data
     bikelane_df = data.get_cov_bikelane_data(params)
     ## cov street gis data

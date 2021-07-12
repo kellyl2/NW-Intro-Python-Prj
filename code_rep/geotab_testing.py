@@ -167,7 +167,7 @@ def get_trip_summary_data(params, check_trips=False, gps_conn=None, device_list=
     result['trip_hr'] = pd.to_datetime(result['start']).dt.strftime('%H').astype(float)
     result['tripDuration'] = result['stop'].dt.hour+round(result['stop'].dt.minute/60,2)-result['start'].dt.hour+round(result['start'].dt.minute/60,2)
     result['drivingDuration'] = round(pd.to_timedelta(result['drivingDuration'].astype(str)).dt.total_seconds()/3600,2)
-    result['idlingDuration'] = round(pd.to_timedelta(result['idlingDuration'].astype(str)).dt.total_seconds()/3600,2)
+
     result['averageSpeed'].round(decimals=2)
     result['distance'].round(decimals=2)
     result['shift'] = 'night'
@@ -249,6 +249,7 @@ def get_gps_exceptions(params,exception_item='',device_list=[],gps_conn=None, df
     for k in params['gps_rules']:
         if params['gps_rules'][k]['rule']==exception_item:
             exception_id=params['gps_rules'][k]['id']
+            print(exception_item,'\n sensor data definition',params['gps_rules'][k]['description'])
     
     if exception_id==None:
         print("cannot find the exception search paramters requested")
@@ -277,7 +278,7 @@ def get_gps_exceptions(params,exception_item='',device_list=[],gps_conn=None, df
         result['activeTo']=result['activeTo'].dt.tz_convert(time_zone)
         result['exceptionDuration'] = round(pd.to_timedelta(result['duration'].astype(str)).dt.total_seconds()/3600,2)
     
-    if params['verbose']==True: print(result.head(2))
+    if params['verbose']==True:  print(result.head(2))
     
 
     return result

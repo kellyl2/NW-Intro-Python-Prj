@@ -1,0 +1,61 @@
+{
+    "COV_open_data_api_key": "9f5582ff69d05faa9e1baba68656553fa2db03dd5bd32f3a3558c6b4",
+    "DAILY": {
+        "end": "2021-07-31",
+        "start": "2021-07-30",
+        "year": 2021
+    },
+    "cov_arterials_json": "cov_arterials.json",
+    "cov_bikelane_gis_data_url": "https://opendata.vancouver.ca/api/records/1.0/search/?dataset=bikeways&q=&rows=10000&facet=bike_route_name&facet=bikeway_type&facet=status&facet=aaa_network&facet=snow_removal&facet=year_of_construction",
+    "cov_bikelanes_json": "cov_bikelanes.json",
+    "cov_street_gis_data_url": "https://opendata.vancouver.ca/api/records/1.0/search/?dataset=public-streets&q=&rows=10000&facet=streetuse&refine.streetuse=Arterial",
+    "device_status_json": "device_status.json",
+    "email_details": {
+        "filter_name": "STREET SWEEPING"
+    },
+    "exception_gps_json": "exception_gps.json",
+    "filenames": {
+        "all_trips": "all_trips",
+        "file_type": ".xlsx",
+        "onsite_trips": "onsite_trips"
+    },
+    "folder_location": "D:\\NorthWestern_Active\\Python\\Project\\data",
+    "gps_rules": {
+        "1": {
+            "description": "auxiliary vehicle equipment engaged - aux 1 (left broom), aux 2 (right broom), aux 4 (water)",
+            "id": "aC8HtvKrVzUq7CkhZ9P1VvA",
+            "rule": "street sweeper engaged"
+        },
+        "2": {
+            "descripion": " driver seatbelt unbuckled while the vehicle is travelling under 30 km/hr for more than 250 meters",
+            "id": "aIRmwe_3EI06AzjPlg0Mm-Q",
+            "rule": "street cleaning - seatbelt low speed"
+        },
+        "3": {
+            "description": "auxiliary vehicle equipment engaged while the vehicle is travelling at speeds above the acceptable limits (12 km/hr) for more than 20 seconds",
+            "id": "aXeLaht6Mb0OdmEhrDVl6YA",
+            "rule": "street sweeper - high speed exception"
+        }
+    },
+    "json_orient": "records",
+    "metadata_file": "metadata_info.xlsx",
+    "street_shape_file": "COV_Streets.shp",
+    "time_period": "DAILY",
+    "trip_gps_json": "trip_gps.json",
+    "trip_shape_file": "street_sweeping_trips.shp",
+    "trip_summary_json": "trip_summary.json",
+    "use file": false,
+    "vehicle details": {
+        "b3A": "E2464",
+        "b3B": "E2465",
+        "b464": "D1508",
+        "b466": "D1506",
+        "b4BD": "D1507",
+        "b5C6": "F2466",
+        "b60": "D1554",
+        "bBC": "D2408",
+        "bD": "E2461",
+        "bE": "E2462"
+    },
+    "verbose": false
+}

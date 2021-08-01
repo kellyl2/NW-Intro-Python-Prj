@@ -8,6 +8,8 @@ Created on Wed Jul  7 17:11:50 2021
 import json
 import pytz
 import pandas as pd
+import geopandas as gpd
+from shapely.geometry import Point, Polygon, LineString
 import numpy as np
 import datetime as dt
 import os
@@ -15,6 +17,7 @@ import sys
 file_dir = os.path.dirname(__file__)
 sys.path.append(file_dir)
 import geotab_testing as gps
+import summary_report as sum_r
 
 
 cwd=os.getcwd()
@@ -31,19 +34,25 @@ file_dir=lambda f, x: os.path.join(f,x)
 
 ####################################################
 
-def save_json(df, params, file_name):
+def save_json(df, params, file_name, defined_param=True):
     """
     Parameters
     ----------
     df : dataframe to be saved to the project as a json file
     params : the configuration file (config.json) details to be used
     file_name : the output filename which will be saved.
-
+    defined_param (default True): allows for the user to define a json file that has not yet been defined in the parameters file
+    
     Returns: length of the dataframe saved to the json file 
+
     """
     df.reset_index(drop=True)
-    file_dir=os.path.join(params["folder_location"],params[file_name])
-    df.to_json(file_dir,orient=params['json_orient'])
+    if defined_param ==True:
+        file_dir=os.path.join(params["folder_location"],params[file_name])
+    else:
+        file_dir=os.path.join(params["folder_location"],file_name)
+    
+    df.to_json(file_dir,orient=params['json_orient'], default_handler=str)
     print('number of records saved to json:',len(df))
     return len(df) 
 
@@ -157,3 +166,58 @@ def get_cov_arterial_streets_data(params):
     print(f"arterial street segement GIS data complete, {num_rows} records returned ")   
     print('---------------------')
     return arterial_streets_df
+
+####################################################
+def create_gdf(df,geom_col):
+    geo_df = gpd.GeoDataFrame(df, geometry=df[geom_col])
+    geo_df.drop(columns=[geom_col])
+    print(geo_df.head(1))
+    
+
+
+def generate_geom(df,geom_col,output_get_df=True):
+    geometry=[]
+    n=0
+    
+    for i,row in df.iterrows():
+        
+        geom_type = row[geom_col]['type']
+        coords = row[geom_col]['coordinates']
+        coord_list=[]
+        
+        for c in coords:
+            coord_list.append((c[0],c[1]))
+        
+        geom=eval(geom_type)(coord_list)
+        geometry.append(geom)
+    
+    if output_get_df == True:
+        df['geom']=geometry
+        geo_df = gpd.GeoDataFrame(df, geometry=df['geom'])
+        return geo_df
+        
+    else:
+        return geometry
+        
+###########################################################
+def get_metadata(params, df,df_name, metadata):
+    
+    if params['use file']==True:
+        if os.path.isfile(file_dir(params["folder_location"],df_name+'_meta.json'))==True:
+            print("medtadata file found - getting saved information")
+            file = file_dir(params["folder_location"],df_name+'_meta.json')
+            summary_report = pd.read_json(file,orient=params['json_orient'])
+            return summary_report
+        else:
+            print("dataframe metadata file not found - building from the dataframe")
+            summary_report = sum_r.build_summary_tables( df ,df_name, metadata = metadata)
+            save_json(summary_report, params, df_name+"_meta.json", defined_param=False)
+            return summary_report
+                
+    else:
+        summary_report = sum_r.build_summary_tables( df ,df_name, metadata = metadata)
+        save_json(summary_report, params, df_name+"_meta.json", defined_param=False)
+    return summary_report
+
+
+    

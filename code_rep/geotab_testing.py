@@ -82,6 +82,8 @@ class gps_data(object):
 
         global data
         data = pd.DataFrame(deviceInfo)
+        data['last_gps_record'] = data['last_gps_record'].dt.tz_convert(time_zone)
+        data['active_from'] = data['active_from'].dt.tz_convert(time_zone)
 
         return data
 
@@ -165,9 +167,9 @@ def get_trip_summary_data(params, check_trips=False, gps_conn=None, device_list=
     result['stop'] = result['stop'].dt.tz_convert(time_zone)
     result['trip_day'] = pd.to_datetime(result['start']).dt.strftime('%A')
     result['trip_hr'] = pd.to_datetime(result['start']).dt.strftime('%H').astype(float)
-    result['tripDuration'] = result['stop'].dt.hour+round(result['stop'].dt.minute/60,2)-result['start'].dt.hour+round(result['start'].dt.minute/60,2)
+    result['tripDuration'] =round((pd.to_timedelta(result['drivingDuration'].astype(str)).dt.total_seconds() + pd.to_timedelta(result['idlingDuration'].astype(str)).dt.total_seconds())/3600,2)
     result['drivingDuration'] = round(pd.to_timedelta(result['drivingDuration'].astype(str)).dt.total_seconds()/3600,2)
-
+    result['idlingDuration'] = round(pd.to_timedelta(result['idlingDuration'].astype(str)).dt.total_seconds()/3600,2)
     result['averageSpeed'].round(decimals=2)
     result['distance'].round(decimals=2)
     result['shift'] = 'night'
@@ -175,7 +177,7 @@ def get_trip_summary_data(params, check_trips=False, gps_conn=None, device_list=
     result['shift'] = np.where(pd.to_datetime(result['start']).dt.strftime('%H').astype(int).between(14,20), 'afternoon', result['shift'])
     result['shift_day'] = pd.to_datetime(result['start']).dt.strftime('%A')
     ### business rule: he shift day moves for overnight shifts is defined as the dat the shift started - for the time between 0am and 7am the shift day is the day prior
-    result['shift_day'] = np.where(pd.to_datetime(result['start']).dt.strftime('%H').astype(int).between(0,7), pd.to_datetime(result['start']+DateOffset(days=-1)).dt.strftime('%A'), result['shift_day'])
+    result['shift_day'] = np.where(pd.to_datetime(result['start']).dt.strftime('%H').astype(int).between(0,6), pd.to_datetime(result['start']+DateOffset(days=-1)).dt.strftime('%A'), result['shift_day'])
     
 
 
@@ -285,8 +287,7 @@ def get_gps_exceptions(params,exception_item='',device_list=[],gps_conn=None, df
     
 
 
-
-      
+     
 
 def generate_trip_geom(summary_df,trip_df, params):
     trips=summary_df['trip_id'].unique()
@@ -312,11 +313,14 @@ def generate_trip_geom(summary_df,trip_df, params):
     #print(summary_df.tail())
     
     geo_df = gpd.GeoDataFrame(summary_df, geometry=summary_df['trip_geom'])
-    #print(geo_df.head(1))
+    geo_df.drop(columns=['trip_geom'])
     return geo_df, summary_df
+
     
 
-
+        
+        
+    
             
 
 # def get_device_groups(device_list=[],gps_conn=None,COV_groups={}):
